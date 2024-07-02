@@ -7,6 +7,8 @@ import inline
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
+from sqlalchemy.ext.asyncio import AsyncSession
+from database.models import Product
 users_router = Router()
 
 
@@ -100,7 +102,7 @@ async def schedule_input(callback: CallbackQuery, state: FSMContext):
 
 
 @users_router.callback_query(vacance_info.experience)
-async def schedule_input(callback: CallbackQuery, state: FSMContext):
+async def experience_input(callback: CallbackQuery, state: FSMContext):
     await state.update_data(experience=callback.data)
     await callback.answer('Вы выбрали опыт работы')
     await state.set_state(vacance_info.employment)
@@ -108,13 +110,29 @@ async def schedule_input(callback: CallbackQuery, state: FSMContext):
 
 
 @users_router.callback_query(vacance_info.employment)
-async def schedule_input(callback: CallbackQuery, state: FSMContext):
+async def employment_input(callback: CallbackQuery, state: FSMContext, session: AsyncSession):
     await state.update_data(employment=callback.data)
     await callback.answer('Вы выбрали тип занятости')
     data = await state.get_data()
     await callback.message.answer(f'Регион: {data["area"]}\nСпециализация: {data["prof_role"]}\n'
                                   f'Уровень дохода: {data["salary"]}\nГрафик работы: {data["schedule"]}\n'
                                   f'Опыт работы: {data["experience"]}\nТип занятости: {data["employment"]}')
+    if data["employment"] in inline.check:
+        data["employment"] = inline.check[data["employment"]]
+    if data["prof_role"] in inline.check:
+        data["prof_role"] = inline.check[data["prof_role"]]
+
+    session.add(Product(
+        area=data["area"],
+        prof_role=data["prof_role"],
+        salary=data["salary"],
+        schedule=data["schedule"],
+        experience=data["experience"],
+        employment=data["employment"]
+    ))
+
+    await session.commit()
+    await callback.message.answer('Подтвердите, что данные указаны верно', reply_markup=reply.get_keyboard)
     await state.clear()
 
 #@users_router.message(or_f(F.text.lower() == 'стоп', Command('stop'))

@@ -1,4 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup,KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 start_keyboard = ReplyKeyboardMarkup(
     keyboard=[
@@ -13,3 +13,10 @@ start_keyboard = ReplyKeyboardMarkup(
 )
 
 del_kbd = ReplyKeyboardRemove()
+
+get_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text="Всё верно")],
+    ],
+    resize_keyboard=True
+)

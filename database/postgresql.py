@@ -138,3 +138,86 @@ def run_parsing_job():
         logging.error(f"Ошибка при выполнении задачи парсинга: {e}")
 
 
+from sqlalchemy import create_engine, Integer, String, Column, Text, ForeignKey, TIMESTAMP
+from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+from datetime import datetime
+import uuid
+
+# Параметры подключения к PostgreSQL
+DB_HOST = "127.0.0.1"  # Или IP-адрес Docker контейнера
+DB_PORT = "5432"
+DB_NAME = "vacancies"
+DB_USER = "postgres"
+DB_PASSWORD = "postgres"
+
+DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+
+engine = create_engine(DATABASE_URL)
+
+Session = sessionmaker(bind=engine)
+
+session = Session()
+
+Base = declarative_base()
+
+
+class Search(Base):
+    tablename = 'search'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    job_title = Column(String(255), nullable=False)
+    experience = Column(String(255), nullable=False)
+    employment = Column(String(255), nullable=False)
+    city = Column(String(255), nullable=False)
+
+    vacancies = relationship('Vacancy', back_populates='search')
+
+
+class Vacancy(Base):
+    tablename = 'vacancy'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String(255), nullable=False)
+    company_name = Column(String(255), nullable=False)
+    salary = Column(String(255), nullable=False)
+    offer_link = Column(Text, nullable=False)
+    search_id = Column(Integer, ForeignKey('search.id'), nullable=False)
+    created_at = Column(TIMESTAMP, nullable=False, default=datetime.utcnow)
+
+    search = relationship('Search', back_populates='vacancies')
+
+
+# Пример использования существующей базы данных
+
+# Добавление новой записи
+new_search = Search(
+    job_title="Software Engineer",
+    experience="3-5 years",
+    employment="Full-time",
+    city="San Francisco"
+)
+
+session.add(new_search)
+session.commit()
+
+new_vacancy = Vacancy(
+    title="Backend Developer",
+    company_name="Tech Corp",
+    salary="120000",
+    offer_link="http://example.com/job/backend-developer",
+    search_id=new_search.id,
+    created_at=datetime.utcnow()
+)
+
+session.add(new_vacancy)
+session.commit()
+
+# Получение записей
+searches = session.query(Search).all()
+for search in searches:
+    print(f"Search ID: {search.id}, Job Title: {search.job_title}")
+
+vacancies = session.query(Vacancy).all()
+for vacancy in vacancies:
+    print(f"Vacancy Title: {vacancy.title}, Company: {vacancy.company_name}")
+

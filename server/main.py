@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 
+
 app = FastAPI()
 
-@app.get("/")
-def hello():
-    return "Hello!"
+
+@app.post("/app")
+async def handle_request():
+    return
