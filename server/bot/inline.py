@@ -2,14 +2,14 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 sal_kb = [
     [
-        InlineKeyboardButton(text='от 75.000', callback_data='от 75.000'),
-        InlineKeyboardButton(text='от 155.000', callback_data='от 155.000'),
+        InlineKeyboardButton(text='от 75.000', callback_data='75000'),
+        InlineKeyboardButton(text='от 155.000', callback_data='155000'),
     ],
     [
-        InlineKeyboardButton(text='от 235.000', callback_data='от 235.000'),
-        InlineKeyboardButton(text='от 315.000', callback_data='от 315.000'),
+        InlineKeyboardButton(text='от 235.000', callback_data='235000'),
+        InlineKeyboardButton(text='от 315.000', callback_data='315000'),
     ],
-    [InlineKeyboardButton(text='от 395.000', callback_data='от 395.000')]
+    [InlineKeyboardButton(text='от 395.000', callback_data='395000')]
 ]
 
 salary_kb = InlineKeyboardMarkup(inline_keyboard=sal_kb)

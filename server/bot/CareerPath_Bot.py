@@ -10,16 +10,18 @@ dp = Dispatcher()
 dp.include_router(users_router)
 allowed_upd = ['message, inline_query, callback_query']
 
-async def on_startup(bot):
 
+async def on_startup(bot):
     run_param = False
     if run_param:
         await drop_db()
 
     await create_db()
 
+
 async def on_shutdown(bot):
     print('бот лег')
+
 
 async def main():
     dp.startup.register(on_startup)

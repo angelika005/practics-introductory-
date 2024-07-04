@@ -9,6 +9,8 @@ from aiogram.fsm.state import State, StatesGroup
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.models import Product
+from update_db import update_vacancies
+
 users_router = Router()
 
 
@@ -134,6 +136,11 @@ async def employment_input(callback: CallbackQuery, state: FSMContext, session: 
     await session.commit()
     await callback.message.answer('Подтвердите, что данные указаны верно', reply_markup=reply.get_keyboard)
     await state.clear()
+
+@users_router.message(F.text == 'Всё верно')
+async def vacancy_output(message: types.Message):
+    await(update_vacancies())
+    await message.unswer('Вот список подходящих вакансий')
 
 #@users_router.message(or_f(F.text.lower() == 'стоп', Command('stop'))
 #async def stop_cmd(message: types.Message):
