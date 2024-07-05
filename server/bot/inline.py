@@ -34,13 +34,12 @@ employment_kb = InlineKeyboardMarkup(inline_keyboard=emp_kb)
 exp_kb = [
     [
         InlineKeyboardButton(text='Нет опыта', callback_data='Нет опыта'),
-        InlineKeyboardButton(text='От 1 года до 3 лет', callback_data='От года 1 до 3 лет'),
+        InlineKeyboardButton(text='От 1 года до 3 лет', callback_data='От 1 года до 3 лет'),
     ],
     [
         InlineKeyboardButton(text='От 3 до 6 лет', callback_data='От 3 до 6 лет'),
         InlineKeyboardButton(text='Более 6 лет', callback_data='Более 6 лет'),
-    ],
-    [InlineKeyboardButton(text='Не важно', callback_data='Не имеет значения')]
+    ]
 ]
 experience_kb = InlineKeyboardMarkup(inline_keyboard=exp_kb)
 

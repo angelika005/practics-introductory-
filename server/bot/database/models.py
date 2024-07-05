@@ -22,7 +22,7 @@ class Vacancy(Base):
     area: Mapped[str] = mapped_column(String(50))
     company: Mapped[str] = mapped_column(String(50))
     prof_role: Mapped[str] = mapped_column(String(50))
-    salary: Mapped[str] = mapped_column(String(50))
+    salary: Mapped[str] = mapped_column(nullable=True)
     schedule: Mapped[str] = mapped_column(String(50))
     experience: Mapped[str] = mapped_column(String(50))
     employment: Mapped[str] = mapped_column(String(50))

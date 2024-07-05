@@ -2,7 +2,7 @@ from aiogram import Bot, Dispatcher, types
 import asyncio
 from users import users_router
 from bot_cmd_list import private
-from database.engine import create_db, drop_db, session_maker
+from database.engine import create_db, drop_db, session_maker, create_vacancy_db, session_maker_hh
 from database.db_middleware import DataBaseSession
 
 bot = Bot(token='7282888811:AAEebWuZDOrekkGm_8GNqZfTdcpDkco0ev8')
@@ -11,12 +11,14 @@ dp.include_router(users_router)
 allowed_upd = ['message, inline_query, callback_query']
 
 
+
 async def on_startup(bot):
     run_param = False
     if run_param:
         await drop_db()
 
     await create_db()
+    await  create_vacancy_db()
 
 
 async def on_shutdown(bot):

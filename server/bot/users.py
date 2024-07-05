@@ -10,6 +10,7 @@ from aiogram.fsm.state import State, StatesGroup
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.models import Product
 from update_db import update_vacancies
+from database.engine import get_vacancies, session_maker_hh, drop_db, drop_vacancy_db, create_vacancy_db, create_db
 
 users_router = Router()
 
@@ -29,9 +30,14 @@ async def start(message: types.Message):
     await message.answer('Здравствуйте! Что Вы хотите посмотреть?', reply_markup=reply.start_keyboard)
 
 
-@users_router.message(or_f(F.text.lower() == 'статистика', Command('statistics')))
-async def statistics_cmd(message: types.Message):
-    await message.answer('Общая статистика на сегодня', reply_markup=reply.del_kbd)
+@users_router.message(Command('stop'))
+async def stop(message: types.Message, state: FSMContext):
+    await state.clear()
+    await drop_db()
+    await create_db()
+    await drop_vacancy_db()
+    await create_vacancy_db()
+    await message.answer('Процесс остановлен. Если хотите начать сначала, используйте команду /start')
 
 
 @users_router.message(or_f(F.text.lower() == 'вакансии', Command('vacancies')))
@@ -137,13 +143,29 @@ async def employment_input(callback: CallbackQuery, state: FSMContext, session: 
     await callback.message.answer('Подтвердите, что данные указаны верно', reply_markup=reply.get_keyboard)
     await state.clear()
 
-@users_router.message(F.text == 'Всё верно')
-async def vacancy_output(message: types.Message):
-    await(update_vacancies())
-    await message.unswer('Вот список подходящих вакансий')
 
-#@users_router.message(or_f(F.text.lower() == 'стоп', Command('stop'))
-#async def stop_cmd(message: types.Message):
-#    await message.answer('Была введена команда "stop"', reply_markup=reply.del_kbd)
+@users_router.message(F.text == 'Всё верно')
+async def vacancy_update(message: types.Message):
+    await(update_vacancies())
+    await message.answer('Вот список подходящих вакансий', reply_markup=reply.del_kbd)
+    try:
+        async with session_maker_hh() as session:
+            vacancies = await get_vacancies(session)
+            # Process and send vacancies to user
+            for vacancy in vacancies:
+                if vacancy.salary == None:
+                    new_salary = 'З/п не указана'
+                else:
+                    new_salary = vacancy.salary
+                await message.answer(
+                    f"<b>{vacancy.company}</b>\n{vacancy.prof_role}\n<u>{new_salary}</u>\n{vacancy.url}",
+                    parse_mode="HTML")
+    except Exception as e:
+        await message.answer(f"An error occurred: {str(e)}")
+    await message.answer('Это все вакансии на сегодня')
+    await drop_db()
+    await create_db()
+    await drop_vacancy_db()
+    await create_vacancy_db()
 
 #Inline_Keyboard
