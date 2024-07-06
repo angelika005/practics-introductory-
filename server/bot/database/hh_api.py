@@ -2,7 +2,7 @@ import aiohttp
 import os
 
 HH_API_URL = "https://api.hh.ru/vacancies"
-HH_API_TOKEN = 'APPLHIOPSPUH2TUHNNE7T1P4129Q3QNTV4ERREEM4390JVI58LKCO042OJMASC9I'
+HH_API_TOKEN = 'ваш токен'
 
 async def fetch_vacancies(params):
     headers = {

@@ -5,7 +5,7 @@ from bot_cmd_list import private
 from database.engine import create_db, drop_db, session_maker, create_vacancy_db, session_maker_hh
 from database.db_middleware import DataBaseSession
 
-bot = Bot(token='7282888811:AAEebWuZDOrekkGm_8GNqZfTdcpDkco0ev8')
+bot = Bot(token='ваш токен')
 dp = Dispatcher()
 dp.include_router(users_router)
 allowed_upd = ['message, inline_query, callback_query']
